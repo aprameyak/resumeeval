@@ -1,0 +1,45 @@
+# Node
+node_modules/
+.next/
+dist/
+build/
+.turbo/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+
+# Uploads
+uploads/
+cache/
+resume_evaluations.csv
+
+# Reports
+apps/api/uploads/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Hiring agent (cloned separately, not committed)
+hiring-agent/
