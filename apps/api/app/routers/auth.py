@@ -20,13 +20,6 @@ from app.config import settings
 
 router = APIRouter()
 
-
-def get_current_user(token: str = Depends(lambda: None), db: Session = Depends(get_db)) -> User:
-    """FastAPI dependency — extract and validate JWT."""
-    from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-    raise NotImplementedError("Use get_current_user_dep instead")
-
-
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 bearer_scheme = HTTPBearer()

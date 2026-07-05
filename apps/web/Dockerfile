@@ -1,7 +1,8 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN npm ci
+COPY package.json ./
+# Use npm install (not npm ci) so no lockfile is required
+RUN npm install --frozen-lockfile=false
 
 FROM node:20-alpine AS builder
 WORKDIR /app

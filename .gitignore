@@ -41,5 +41,8 @@ Thumbs.db
 .idea/
 *.swp
 
-# Hiring agent (cloned separately, not committed)
-hiring-agent/
+# The hiring-agent is cloned into the Docker image at build time (see Dockerfile).
+# For local dev, clone it manually: git clone https://github.com/interviewstreet/hiring-agent ./hiring-agent
+# The directory itself is gitignored but a .gitkeep is committed so the path exists.
+hiring-agent/*
+!hiring-agent/.gitkeep

@@ -6,9 +6,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libpq-dev \
     libffi-dev \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+RUN mkdir -p /app/uploads /app/uploads/reports
+
 EXPOSE 8000
+# Source is mounted as a volume in docker-compose.dev.yml
+# hiring-agent is also mounted as a volume for easy local updates

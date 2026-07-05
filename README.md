@@ -66,7 +66,8 @@ Browser → Next.js 15 → FastAPI → HiringAgentAdapter → hiring-agent engin
 git clone https://github.com/aprameyak/resumeeval
 cd resumeeval
 
-# Clone the hiring-agent engine (required)
+# For local dev only — clone the hiring-agent engine locally
+# (In production Docker builds, it is cloned automatically inside the image)
 git clone https://github.com/interviewstreet/hiring-agent ./hiring-agent
 
 # Copy environment file
@@ -77,11 +78,17 @@ cp .env.example .env
 ### 2. Start with Docker (recommended)
 
 ```bash
+# Build images (clones hiring-agent inside the API image automatically)
+docker compose build
+
 # Start all services
 docker compose up -d
 
 # Run migrations
 docker compose exec api alembic upgrade head
+
+# Seed demo user (demo@resumescore.app / demo12345)
+docker compose exec api python scripts/seed.py
 
 # Open the app
 open http://localhost:3000
@@ -94,7 +101,7 @@ open http://localhost:3000
 make setup
 
 # Start Postgres + Redis via Docker
-docker compose up -d postgres redis
+docker compose -f docker-compose.dev.yml up -d postgres redis
 
 # Terminal 1: API
 make dev-api
@@ -138,32 +145,44 @@ Once running, visit:
 | `GET` | `/reports/{id}/download` | Download PDF report |
 | `GET` | `/health` | Health check |
 
-## Deployment
+## Deployment (Free Hosting)
 
-### Vercel (Frontend)
+The hiring-agent is cloned **inside the Docker image at build time** — no separate setup needed on any host.
+
+### Frontend → Vercel (free)
 
 ```bash
 cd apps/web
 npx vercel --prod
-# Set NEXT_PUBLIC_API_URL to your Railway/Fly.io API URL
+# Set env var: NEXT_PUBLIC_API_URL=https://your-api.railway.app
 ```
 
-### Railway (Backend)
+### Backend + Worker + DB → Railway (free tier)
 
+1. Create a new Railway project
+2. Add a PostgreSQL service and a Redis service from the Railway dashboard
+3. Deploy the API:
 ```bash
 railway login
-railway init
+cd apps/api
 railway up
-# Set all env vars in Railway dashboard
+# Set env vars in Railway dashboard:
+# DATABASE_URL, REDIS_URL, SECRET_KEY, GEMINI_API_KEY, GITHUB_TOKEN
 ```
+4. Add a second Railway service for the Celery worker with start command:
+   `celery -A app.workers.tasks worker --loglevel=info --concurrency=1`
 
-### Fly.io (Backend)
+### Alternative: Render (free)
 
-```bash
-fly launch --dockerfile apps/api/Dockerfile
-fly secrets set GEMINI_API_KEY=... SECRET_KEY=...
-fly deploy
-```
+- Web Service: `apps/api/` → Docker → start command `uvicorn main:app --host 0.0.0.0 --port $PORT`
+- Worker: same image, start command `celery -A app.workers.tasks worker --loglevel=info`
+- Add Render PostgreSQL and Redis (free tiers)
+
+### Notes on free tier
+
+- **File uploads**: Use S3-compatible storage (Cloudflare R2 free tier: 10GB) for persistent uploads. Set `STORAGE_BACKEND=s3` in env vars. Local storage is ephemeral on free hosts.
+- **Celery + Redis**: Upstash Redis has a generous free tier and works well with Railway/Render.
+- **Evaluations take 30–90s**: Free tier instances sleep — consider upgrading to avoid cold starts.
 
 ## Hiring-Agent Integration
 

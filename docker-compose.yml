@@ -33,6 +33,7 @@ services:
     build:
       context: ./apps/api
       dockerfile: Dockerfile
+      # hiring-agent is cloned inside the image at build time — no volume needed
     restart: unless-stopped
     depends_on:
       postgres:
@@ -59,7 +60,6 @@ services:
       HIRING_AGENT_PATH: /app/hiring-agent
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
     volumes:
-      - ./hiring-agent:/app/hiring-agent:ro
       - resume_uploads:/app/uploads
     ports:
       - "8000:8000"
@@ -87,7 +87,6 @@ services:
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       HIRING_AGENT_PATH: /app/hiring-agent
     volumes:
-      - ./hiring-agent:/app/hiring-agent:ro
       - resume_uploads:/app/uploads
     command: celery -A app.workers.tasks worker --loglevel=info --concurrency=2
 
