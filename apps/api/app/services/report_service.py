@@ -59,7 +59,6 @@ def generate_pdf_report(evaluation: Evaluation) -> str:
     styles = getSampleStyleSheet()
     story = []
 
-    # ── Header ────────────────────────────────────────────────────────────────
     title_style = ParagraphStyle("title", parent=styles["Title"], textColor=DARK, fontSize=24, spaceAfter=4)
     sub_style = ParagraphStyle("sub", parent=styles["Normal"], textColor=MUTED, fontSize=11, spaceAfter=16)
     section_style = ParagraphStyle("section", parent=styles["Heading2"], textColor=PRIMARY, fontSize=14, spaceBefore=18, spaceAfter=8)
@@ -72,7 +71,6 @@ def generate_pdf_report(evaluation: Evaluation) -> str:
     story.append(Paragraph(f"Generated: {datetime.utcnow().strftime('%B %d, %Y at %H:%M UTC')}", muted_style))
     story.append(HRFlowable(width="100%", thickness=1, color=PRIMARY, spaceAfter=16))
 
-    # ── Overall Score ─────────────────────────────────────────────────────────
     story.append(Paragraph("Overall Score", section_style))
     total = evaluation.total_score or 0
     bonus = evaluation.bonus_points_total or 0
@@ -108,7 +106,6 @@ def generate_pdf_report(evaluation: Evaluation) -> str:
     story.append(table)
     story.append(Spacer(1, 0.5 * cm))
 
-    # ── Evidence ──────────────────────────────────────────────────────────────
     story.append(Paragraph("Category Evidence", section_style))
     evidences = [
         ("Open Source", evaluation.open_source_evidence),
@@ -122,7 +119,6 @@ def generate_pdf_report(evaluation: Evaluation) -> str:
             story.append(Paragraph(evidence, muted_style))
             story.append(Spacer(1, 0.3 * cm))
 
-    # ── Bonuses / Deductions ──────────────────────────────────────────────────
     if evaluation.bonus_points_breakdown:
         story.append(Paragraph("Bonus Points", section_style))
         story.append(Paragraph(f"Total: +{bonus:.1f} points", body_style))
@@ -133,19 +129,16 @@ def generate_pdf_report(evaluation: Evaluation) -> str:
         story.append(Paragraph(f"Total: -{deduc:.1f} points", body_style))
         story.append(Paragraph(evaluation.deductions_reasons, muted_style))
 
-    # ── Strengths ─────────────────────────────────────────────────────────────
     if evaluation.key_strengths:
         story.append(Paragraph("Key Strengths", section_style))
         for s in evaluation.key_strengths:
             story.append(Paragraph(f"• {s}", body_style))
 
-    # ── Areas for Improvement ─────────────────────────────────────────────────
     if evaluation.areas_for_improvement:
         story.append(Paragraph("Areas for Improvement", section_style))
         for a in evaluation.areas_for_improvement:
             story.append(Paragraph(f"• {a}", body_style))
 
-    # ── GitHub Summary ────────────────────────────────────────────────────────
     if evaluation.github_data:
         gh = evaluation.github_data
         profile = gh.get("profile", {}) if isinstance(gh, dict) else {}
@@ -157,7 +150,6 @@ def generate_pdf_report(evaluation: Evaluation) -> str:
             if profile.get("bio"):
                 story.append(Paragraph(f"Bio: {profile['bio']}", muted_style))
 
-    # ── Footer ────────────────────────────────────────────────────────────────
     story.append(Spacer(1, cm))
     story.append(HRFlowable(width="100%", thickness=0.5, color=MUTED))
     story.append(Spacer(1, 0.3 * cm))

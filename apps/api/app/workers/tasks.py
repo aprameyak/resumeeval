@@ -33,10 +33,7 @@ celery_app.conf.update(
 
 @celery_app.task(bind=True, name="app.workers.tasks.evaluate_resume_task", max_retries=2)
 def evaluate_resume_task(self, evaluation_id: str, resume_id: str, user_id: str, job_description: str | None = None):
-    """
-    Background task: run hiring-agent evaluation and store results.
-    Retries up to 2 times on transient failures.
-    """
+    """Run hiring-agent evaluation and store results. Retries up to 2 times on failure."""
     from app.database import SessionLocal
     from app.models.evaluation import Evaluation, EvaluationStatus
     from app.models.resume import Resume, ResumeStatus
@@ -57,10 +54,8 @@ def evaluate_resume_task(self, evaluation_id: str, resume_id: str, user_id: str,
         resume.status = ResumeStatus.PROCESSING
         db.commit()
 
-        # Get local file path (downloads from S3 if needed)
         local_path = storage_service.get_local_path(resume.file_path)
 
-        # Run hiring-agent evaluation (blocking, in this worker process)
         adapter = HiringAgentAdapter(settings.HIRING_AGENT_PATH)
         loop = asyncio.new_event_loop()
         try:
@@ -70,7 +65,6 @@ def evaluate_resume_task(self, evaluation_id: str, resume_id: str, user_id: str,
         finally:
             loop.close()
 
-        # Store parsed resume data
         if result.get("parsed_resume"):
             resume.parsed_data = result["parsed_resume"]
             resume.status = ResumeStatus.COMPLETED

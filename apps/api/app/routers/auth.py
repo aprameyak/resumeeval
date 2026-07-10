@@ -134,7 +134,6 @@ def forgot_password(body: ForgotPasswordRequest, db: Session = Depends(get_db)):
         user.reset_token = secrets.token_urlsafe(32)
         user.reset_token_expires = datetime.utcnow() + timedelta(hours=2)
         db.commit()
-        # TODO: send email with reset link
     # Always return 204 to prevent email enumeration
 
 

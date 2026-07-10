@@ -117,12 +117,10 @@ def run_job_match(
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
 
-    # Create evaluation with job description context
     evaluation = create_evaluation_record(
         db, body.resume_id, current_user.id, job_description=body.job_description
     )
 
-    # Create job match record
     job_match = JobMatch(
         resume_id=body.resume_id,
         user_id=current_user.id,
@@ -134,7 +132,6 @@ def run_job_match(
     db.add(job_match)
     db.commit()
 
-    # Queue evaluation task
     from app.workers.tasks import evaluate_resume_task
     task = evaluate_resume_task.apply_async(
         args=[str(evaluation.id), str(body.resume_id), str(current_user.id), body.job_description],

@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
     logger.info("Starting ResumeScore API")
     logger.info(f"Hiring agent path: {settings.HIRING_AGENT_PATH}")
     if not os.path.exists(settings.HIRING_AGENT_PATH):
@@ -31,10 +30,8 @@ async def lifespan(app: FastAPI):
             f"⚠️  Hiring agent not found at {settings.HIRING_AGENT_PATH}. "
             "Run: git clone https://github.com/interviewstreet/hiring-agent ./hiring-agent"
         )
-    # Create upload directory
     os.makedirs(settings.LOCAL_UPLOAD_PATH, exist_ok=True)
     yield
-    # Shutdown
     logger.info("Shutting down ResumeScore API")
 
 
@@ -47,7 +44,6 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[settings.FRONTEND_URL, "http://localhost:3000", "http://127.0.0.1:3000"],
@@ -56,7 +52,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Routers
 app.include_router(health.router, tags=["health"])
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(resumes.router, prefix="/resumes", tags=["resumes"])

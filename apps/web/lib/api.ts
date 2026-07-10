@@ -22,7 +22,6 @@ export const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// ── Request interceptor: attach Bearer token ──────────────────────────────────
 api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("access_token");
@@ -33,7 +32,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// ── Response interceptor: handle 401 → refresh ───────────────────────────────
 let isRefreshing = false;
 let refreshSubscribers: Array<(token: string) => void> = [];
 
@@ -81,7 +79,6 @@ api.interceptors.response.use(
   }
 );
 
-// ── Auth ──────────────────────────────────────────────────────────────────────
 export const authApi = {
   register: (data: { email: string; password: string; full_name?: string }) =>
     api.post<AuthTokens>("/auth/register", data).then((r) => r.data),
@@ -103,7 +100,6 @@ export const authApi = {
     api.post("/auth/reset-password", { token, new_password }),
 };
 
-// ── Resumes ───────────────────────────────────────────────────────────────────
 export const resumesApi = {
   upload: (file: File, onProgress?: (pct: number) => void) => {
     const form = new FormData();
@@ -131,7 +127,6 @@ export const resumesApi = {
     api.get<Evaluation[]>(`/resumes/${resumeId}/evaluations`).then((r) => r.data),
 };
 
-// ── Evaluations ───────────────────────────────────────────────────────────────
 export const evaluationsApi = {
   list: (skip = 0, limit = 50) =>
     api.get<EvaluationListResponse>("/evaluations", { params: { skip, limit } }).then((r) => r.data),
@@ -157,7 +152,6 @@ export const evaluationsApi = {
   }) => api.post<JobMatch>("/evaluations/job-match", data).then((r) => r.data),
 };
 
-// ── Reports ───────────────────────────────────────────────────────────────────
 export const reportsApi = {
   download: async (evaluationId: string, candidateName: string) => {
     const response = await api.get(`/reports/${evaluationId}/download`, {

@@ -1,5 +1,4 @@
 // Shared TypeScript types for ResumeScore
-// These mirror the hiring-agent output schema
 
 export const SCORE_CATEGORIES = {
   open_source: { label: "Open Source", max: 35 },
