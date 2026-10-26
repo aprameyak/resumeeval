@@ -1,3 +1,5 @@
+This project continues in [res](https://github.com/aprameyak/res).
+
 # ResumeScore
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white&style=for-the-badge)
