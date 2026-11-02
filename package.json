@@ -16,5 +16,10 @@
   "packageManager": "npm@10.8.2",
   "engines": {
     "node": ">=20.0.0"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "^8.5.23"
+    }
   }
 }
