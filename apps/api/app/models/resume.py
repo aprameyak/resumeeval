@@ -2,10 +2,14 @@
 import uuid
 from datetime import datetime
 from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Text, Enum
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import JSON
+from sqlalchemy.dialects.postgresql import UUID, JSONB as PG_JSONB
 from sqlalchemy.orm import relationship
 import enum
 from app.database import Base
+
+# JSONB on Postgres, plain JSON on SQLite (used by the tests)
+JSONB = JSON().with_variant(PG_JSONB(), "postgresql")
 
 
 class ResumeStatus(str, enum.Enum):

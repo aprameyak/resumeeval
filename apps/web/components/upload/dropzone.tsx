@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useState } from "react";
-import { useDropzone } from "react-dropzone";
+import { useDropzone, type FileRejection } from "react-dropzone";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, FileText, X, AlertCircle } from "lucide-react";
 import { cn, formatBytes } from "@/lib/utils";
@@ -20,7 +20,7 @@ export function ResumeDropzone() {
   const [error, setError] = useState<string | null>(null);
 
   const onDrop = useCallback(
-    (accepted: File[], rejected: any[]) => {
+    (accepted: File[], rejected: FileRejection[]) => {
       setError(null);
       if (rejected.length > 0) {
         const err = rejected[0].errors[0];
@@ -50,8 +50,9 @@ export function ResumeDropzone() {
     try {
       await upload(selectedFile);
       setSelectedFile(null);
-    } catch (e: any) {
-      setError(e?.response?.data?.detail || "Upload failed");
+    } catch (e) {
+      const detail = (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      setError(detail || "Upload failed");
     }
   };
 
