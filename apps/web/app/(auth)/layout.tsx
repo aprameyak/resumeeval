@@ -4,7 +4,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="flex min-h-screen">
       {/* Left panel */}
-      <div className="hidden w-1/2 flex-col bg-gradient-to-br from-brand-600 to-brand-800 p-12 text-white lg:flex">
+      <div className="hidden w-1/2 flex-col p-12 text-white lg:flex bg-brand-800">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20">
             <Zap className="h-5 w-5" />
